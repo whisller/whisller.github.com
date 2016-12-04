@@ -4,15 +4,8 @@
 
 <head>
     <title>CV - Daniel Ancuta</title>
-
     <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
-
-
     <style>
-        /* MinimalMe - CV / Resume Template by QBKL */
-
-        /* 1. General */
-
         body {
             margin: 0 auto;
             padding: 30px 0;
@@ -1064,48 +1057,51 @@
 
     <div class="section" style="margin-top: 20px !important;">
         <h2 class="section_title">Personal Statement</h2>
-
-
         <div class="section_content">
             <div class="job">
-                <p>Since I remember, I have been open-minded to learn something new related to software development.</p>
-                <p>That's why even that I was employed full time I always had side projects that I was working on.</p>
-                <p>Place that is not scared to use best tool for a job, even if it means to learn something new.</p>
-                <p>Company that is focused on continuous delivery. Not on email ping-pong and hours of meetings.</p>
-                <p>Environment that appreciates quality rather than quantity. In all projects that I was working on I always keep pushing on it.</p>
-                <p>Company that is product focused.</p>
+                <p>
+                  Since I remember, I have been open-minded to learn something new related to software development.
+                  <br/>
+                  That's why even that I was employed full time I always had side projects that I was working on.
+                </p>
+                <p>
+                  I'm looking for company that is not scared to use best tool for a job, even if it means to learn something new.
+                  <br/>
+                  Company that is focused on continuous delivery. Not on email ping-pong and hours of meetings.
+                  <br/>
+                  Place that knows that people are most important part of company.
+                </p>
+                <p>
+                  Environment that appreciates quality rather than quantity. In all projects that I was working on I always kept pushing on it.
+                  <br/>
+                  Company that is product focused.
+                </p>
             </div>
         </div>
-
     </div>
 
     <!-- Start: Section -->
     <div class="section" style="margin-top: 20px !important;">
         <h2 class="section_title">Technology</h2>
-
-
         <div class="job">
-
             <div>
                 <div style="float: left; margin-top:15px;">
                     <ul>
-                        <li>PHP, Symfony;</li>
-                        <li>Python</li>
-                        <li>Doctrine, Propel ORM;</li>
-                        <li>RabbitMQ;</li>
-                        <li>Jenkins CI, Travis CI;</li>
-                        <li>Linux;</li>
-                        <li>Apache, nginx;</li>
-                        <li>Memcache(d), Redis</li>
+                        <li>PHP (Symfony, Doctrine);</li>
+                        <li>Python (Flask, Celery, Fabric, Scrapy, Django);</li>
+                        <li>Messaging/Queues (RabbitMQ, Beanstalk);</li>
+                        <li>CI (Jenkins, Travis);</li>
+                        <li>HTTP (Apache, Nginx);</li>
+                        <li>Cache (Memcache(d), Redis)</li>
                     </ul>
                 </div>
                 <div style="float: left; margin-top:15px;">
                     <ul>
-                        <li>REST, SOAP;</li>
-                        <li>MySQL, PostgreSQL (PL/pgSQL);</li>
-                        <li>Git, SVN;</li>
-                        <li>SOA;</li>
-                        <li>TDD (phpspec, phpunit), BDD (Behat)</li>
+                        <li>API (REST, SOAP);</li>
+                        <li>Databases (MySQL, PostgreSQL PL/pgSQL);</li>
+                        <li>Version control systems (Git with git-flow, SVN);</li>
+                        <li>Provisioning (SaltStack, Chef)
+                        <li>Development processes (TDD phpspec, phpunit, BDD Behat)</li>
                     </ul>
                 </div>
             </div>
@@ -1118,21 +1114,17 @@
     <!-- Start: Section -->
     <div class="section" style="margin-top: 20px !important;">
         <h2 class="section_title">Work experience</h2>
-
         <div class="section_content">
-
             <div class="job">
                 <div class="one_third">
                     <h3 class="mt0">Lead Software Engineer</h3>
                     <h4>Flubit</h4>
-
                     <ul class="simple_list mt20">
                         <li><strong>Period:</strong> January 2015 - Present</li>
                     </ul>
                 </div>
                 <div class="two_thirds last_column">
                     <p>On a role of "Lead Software Engineer" I got promoted after I showed outstanding skills and attitude for solving problems and improving quality of code and processes in out team.</p>
-                    <p>Lot of responsibilities stayed same as in previous role.</p>
                     <p>I focused even more on mentoring more junior team members.</p>
                     <p>Helping anyone who got blocked by some technical problems. Preparing presentations about our technology stack and possible solutions.</p>
                     <p>Blueprinting and preparing technical solutions of business requirements for the team.</p>
@@ -1152,13 +1144,13 @@
                     </ul>
                 </div>
                 <div class="two_thirds last_column">
-                    <p>Working on several REST APIs, internal (SOA approach) and external for partners like Barclaycard (bespokeoffers.co.uk)</p>
-                    <p>Working closely with product owners and data science team on building business crucial part of software - Product Matching and Inventory Search.</p>
-                    <p>In both cases (product matching, inventory search) search engine is based on ElasticSearch. Currently database has ~33.000.000 products.</p>
+                    <p>Implemented several REST APIs, internal (SOA approach) and external for partners like Barclaycard (bespokeoffers.co.uk) written in Symfony2 and Flask.</p>
+                    <p>Working closely with product owners and data science team on building business crucial parts of software - Product Matching, Inventory Search and data quality tools.</p>
+                    <p>In both cases (product matching, inventory search) search engine is based on ElasticSearch. Currently database has ~55.000.000 documents representing products.</p>
+                    <p>Designed and implemented event driven real time indexing of data updates. Messages being brodcasted by RabbitMQ (~700 per second) and indexed to ElasticSearch with Python.</p>
+                    <p>Introducing good practices in team (code reviews, same environment on all dev machines, libraries up to date...), mentoring more junior members.</p>
                     <p>
-                        Introducing good practices in team (code reviews, same environment on all dev machines, libraries up to date...), mentoring more junior members.</p>
-                    <p>
-                        Technology: <span> PHP + Symfony2, ElasticSearch, TDD (phpspec), BDD (Behat), Vagrant + SaltStack, RabbitMQ, Beanstalkd, Jenkins CI, Doctrine ORM, MySQL</span>
+                        Technology: <span> PHP + Symfony2, ElasticSearch, Python, Flask, Celery, TDD (phpspec), BDD (Behat), Vagrant + SaltStack, RabbitMQ, Beanstalkd, Jenkins CI, Doctrine ORM, MySQL</span>
                     </p>
                 </div>
             </div>
@@ -1313,7 +1305,6 @@
                         <li>GitHub - <a href="http://www.github.com/whisller">www.github.com/whisller</a></li>
                         <li>Linkedin - <a href="http://www.linkedin.com/in/danielancuta">www.linkedin.com/in/danielancuta</a>
                         </li>
-                        <li>Twitter - <a href="https://twitter.com/daniel_ancuta">@daniel_ancuta</a></li>
                         <li>Contributor of Symfony2 Polish translation - <a href="www.symfony-docs.pl">www.symfony-docs.pl</a>
                         </li>
                     </ul>
