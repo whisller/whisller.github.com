@@ -1,0 +1,4 @@
+[submodule "hugo/ancuta.org/themes/anatole"]
+	path = hugo/ancuta.org/themes/anatole
+	url = https://github.com/lxndrblz/anatole.git
+	branch = master

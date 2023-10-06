@@ -1,0 +1,23 @@
+  [[main]]
+  name = "Home"
+  identifier = "home"
+  weight = 100
+  url = "/"
+
+  [[main]]
+  name = "Posts"
+  weight = 200
+  identifier = "posts"
+  url = "/post/"
+
+  [[main]]
+  name = "CV"
+  weight = 500
+  identifier = "cv"
+  url = "/cv/"
+
+  [[main]]
+  name = "Get in touch"
+  weight = 600
+  identifier = "contact"
+  url = "/contact/"
