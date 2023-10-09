@@ -1,10 +1,9 @@
-[en]
 languageCode = "en"
 languageName = "English"
 weight = 1
-title = "ss"
+title = "Daniel Ancuta"
 
-[en.params]
+[params]
 displayName = "EN"
 isoCode = "en"
 rtl = false
