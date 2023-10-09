@@ -1,0 +1,26 @@
+[en]
+languageCode = "en"
+languageName = "English"
+weight = 1
+title = "ss"
+
+[params]
+displayName = "EN"
+isoCode = "en"
+rtl = false
+dateFormat = "2 January 2006"
+#logo = "img/profile.jpg"
+# secondaryLogo = "PATH"
+description = "I am Daniel Ancuta. Backend team lead, with 16+ years of hands-on experience with modern technologies, as well as 4+ years of experience in leading of development teams. Let us get in touch!"
+# copyright = "Copy, _right?_ :thinking_face:"
+
+[author]
+name = "Daniel Ancuta"
+image = "img/profile.jpg"
+headline = "Backend team lead, with 16+ years of hands-on experience with modern technologies, as well as 4+ years of experience in leading of development teams. Let us get in touch!"
+bio = "Backend team lead, with 16+ years of hands-on experience with modern technologies, as well as 4+ years of experience in leading of development teams. Let us get in touch!"
+links = [
+    { github = "https://github.com/whisller" },
+    { linkedin = "https://www.linkedin.com/in/danielancuta/" },
+]
+

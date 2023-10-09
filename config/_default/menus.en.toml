@@ -1,22 +1,22 @@
-  [[main]]
+[[main]]
   name = "Home"
   identifier = "home"
   weight = 100
   url = "/"
 
-  [[main]]
+[[main]]
   name = "Posts"
   weight = 200
   identifier = "posts"
-  url = "/post/"
+  url = "/posts/"
 
-  [[main]]
+[[main]]
   name = "CV"
   weight = 500
   identifier = "cv"
   url = "/cv/"
 
-  [[main]]
+[[main]]
   name = "Get in touch"
   weight = 600
   identifier = "contact"
