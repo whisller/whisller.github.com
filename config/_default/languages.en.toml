@@ -4,7 +4,7 @@ languageName = "English"
 weight = 1
 title = "ss"
 
-[params]
+[en.params]
 displayName = "EN"
 isoCode = "en"
 rtl = false
