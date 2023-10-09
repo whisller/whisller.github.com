@@ -15,4 +15,4 @@ We shall see what future will bring for this blog.
 
 Shall we start?
 
-This blog was built with [hugo](https://gohugo.io/) and [lxndrblz/anatole](https://github.com/lxndrblz/anatole) template.
+This blog was built with [hugo](https://gohugo.io/) and [nunocoracao/blowfish](https://github.com/nunocoracao/blowfish) template.
