@@ -1,38 +1,35 @@
 +++
 author = "Daniel Ancuta"
-title = "Strategies to migrate users to AWS Cognito Pool"
+title = "Strategies to Migrate Users to AWS Cognito Pool"
 date = "2023-06-01"
-description = "Strategies to migrate users to AWS Cognito Pool"
+description = "Strategies to Migrate Users to AWS Cognito Pool"
 tags= ["aws", "aws cognito"]
 +++
 
-If you work in AWS ecosystem, sooner or later you will deal with [AWS Cognito](https://aws.amazon.com/cognito/). 
+If you work in the AWS ecosystem, sooner or later, you will deal with [AWS Cognito](https://aws.amazon.com/cognito/).
 
-AWS Cognito is meant to help you with customer's identity and access management.
+AWS Cognito is meant to help you with customer identity and access management.
 
-So you've decided to use AWS Cognito for the first time, or you used it already. In both cases you might want to migrate your existing users
-from either legacy system or one Cognito Pool to another. 
+So you've decided to use AWS Cognito for the first time, or you've used it already. In both cases, you might want to migrate your existing users from either a legacy system or one Cognito Pool to another.
 
 This post is not meant to go into implementation details of every scenario. That is well covered by AWS documentation.
 
-More I want to show you possible techniques and my, subjective, advantages and disadvantages of them. 
-As there is no "one-size-fits-all" solution, you might want to use single technique or combination of few.
+What I want to show you are possible techniques and my subjective advantages and disadvantages of them. As there is no "one-size-fits-all" solution, you might want to use a single technique or a combination of a few.
 
-## Migrate user Lambda trigger
+## Migrate User Lambda Trigger
 That would be the most common case. You had your legacy database of users. PostgreSQL, MySQL, MSSQL, MongoDB, Cognito Pool, it doesn't matter.
 
-You have decided that you're migrating your database of users to Cognito. But at this same time you want to:
-1. keep your application up and running;
-2. make whole migration as transparent for end user as possible;
-3. allow users to use their old password;
-4. you don't really have to migrate ALL users in one go
+You have decided that you're migrating your database of users to Cognito. But at the same time, you want to:
+1. Keep your application up and running.
+2. Make the whole migration as transparent for the end user as possible.
+3. Allow users to use their old password.
+4. You don't really have to migrate ALL users in one go.
 
-AWS Cognito has a concept of [Migrate user Lambda trigger](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html) which might fit perfectly in that case. 
+AWS Cognito has a concept of [Migrate User Lambda Trigger](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html) which might fit perfectly in that case.
 
 How AWS documentation describes its functionality?
-> When a user doesn't exist in the user pool at sign-in with a password, or in the forgot-password flow, Amazon Cognito invokes this trigger. After the Lambda function returns successfully, Amazon Cognito creates the user in the user pool. F
+> When a user doesn't exist in the user pool at sign-in with a password or in the forgot-password flow, Amazon Cognito invokes this trigger. After the Lambda function returns successfully, Amazon Cognito creates the user in the user pool.
 
-Let us see that on a very simple diagram:
 {{< mermaid >}}
 graph TD
     A[1. User] --> B[2. AWS Cognito User Pool]
@@ -44,26 +41,26 @@ graph TD
     H --> I[8. Deny Access]
 {{< /mermaid >}}
 
-1. User starts whole flow by initialising "Sign in" or "Forgot password" flow
-2. Cognito User Pool triggers migration flow
-3. Trigger invokes your migration lambda
-4. Migration lambda is executed. That's where you validate your user and its password
+1. The user starts the whole flow by initializing the "Sign-in" or "Forgot Password" flow.
+2. The Cognito User Pool triggers the migration flow.
+3. The trigger invokes your migration Lambda.
+4. The migration Lambda is executed. That's where you validate your user and their password.
 
-Let us talk a little bit more about point `4.` and `5.`.
+Let's talk a little bit more about points `4.` and `5.`.
 
 ### 4. Lambda Function (Data Migration)
-That's where whole magic happens! 
+That's where the whole magic happens!
 
-It's place where you validate your user's identity with legacy database, check if user's password is complaint with Cognito Pool rules set by you.
+It's the place where you validate your user's identity with the legacy database, check if the user's password is compliant with Cognito Pool rules set by you.
 
-If you successfully validated your user (identity, password requirements), you can decide about next steps in the flow.
+If you successfully validate your user (identity, password requirements), you can decide about the next steps in the flow.
 
 ### 5. Successful Migration
-Your migration lambda can return back values for `finalUserStatus`, `messageAction`, `desiredDeliveryMediums`, `forceAliasCreation`, `enableSMSMFA`. Which shape how the flow for your user will look like.
+Your migration Lambda can return back values for `finalUserStatus`, `messageAction`, `desiredDeliveryMediums`, `forceAliasCreation`, `enableSMSMFA`. These values shape how the flow for your user will look like.
 
-Please familiarise yourself with current documentation on [Migrate user response parameters](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html#cognito-user-pools-lambda-trigger-syntax-user-migration-response) section.
+Please familiarize yourself with the current documentation on [Migrate User Response Parameters](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html#cognito-user-pools-lambda-trigger-syntax-user-migration-response) section.
 
-Based on your response you will decide if user will be `CONFIRMED` and will be able to sign in, or still will have to change password, or if you will send invitation message (set by `messageAction` attribute), which you rather don't want to do if you want ot make whole process transparent.
+Based on your response, you will decide if the user will be `CONFIRMED` and will be able to sign in, or still will have to change the password, or if you will send an invitation message (set by the `messageAction` attribute), which you'd rather not do if you want to make the whole process transparent.
 
 ### Advantages & Disadvantages
 | Advantages                                | Disadvantages                                          |
@@ -74,22 +71,23 @@ Based on your response you will decide if user will be `CONFIRMED` and will be a
 {{< alert >}}
 **Keep in mind**
 {{< /alert >}}
-1. Make sure to set `messageAction` to `SUPPRESS`, otherwise your newly imported users will get "Welcome" email.
-2. When using migration lambda Cognito will not validate password against it being complaint with Cognito Pool.  It's something you need to do on your own in your lambda.
+1. Make sure to set `messageAction` to `SUPPRESS`, otherwise, your newly imported users will get a "Welcome" email.
+2. When using the migration Lambda, Cognito will not validate the password against it being compliant with Cognito Pool rules. It's something you need to do on your own in your Lambda.
 
-## Create users with SDK
+## Create Users with SDK
 
-Another option is to use SDK and create users on your own. I will be using Python's SDK, [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html), when it comes to code snippets.
-But I assume SDKs in other languages will behave same way. 
+Another option is to use an SDK and create users on your own. I will be using Python's SDK, [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html), when it comes to code snippets.
+But I assume SDKs in other languages will behave the same way.
 
-In this particular approach it's up to you how you will fetch users from your legacy database, and it's up to you to handle calls to AWS through SDK.
+In this particular approach, it's up to you how you will fetch users from your legacy database, and it's up to you to handle calls to AWS through the SDK.
 
-There are two strategies (that comes to my mind) with SDK that you can think of, both described below.
+There are two strategies (that come to my mind) with the SDK that you can think of, both described below.
 
-### Create user and send temporary password
-This strategy requires you to send temporary password to user after their account is created. This temporary password they can use for first "Sign in" and change it.
+### Create User and Send Temporary Password
+This strategy requires you to send a temporary password to the user after their account is created. This temporary password they can use for the first "Sign-in" and change it.
 
-You can create such user with this code:
+You can create such a user with this code:
+
 ```python
 import boto3
 
@@ -117,38 +115,39 @@ for user in fetch_users():
         MessageAction="SUPPRESS"  # This suppresses the welcome email
     )
 ```
-
-That's it. Your user is created. In Cognito it will look like:
+That's it. Your user is created. In Cognito, it will look like:
 ![Cognito User](/img/migrate-users-to-cognito-pool/1.png)
 
-Obviously in real code you would have to add few extra things like:
-1. Error handling, call to `admin_create_user` can fail and throw exception
-2. If you have plenty of users then it might take ages to loop through it this way
-3. You will have to deliver temporary password to your user
+Obviously, in real code, you would have to add a few extra things like:
+1. Error handling, the call to `admin_create_user` can fail and throw an exception.
+2. If you have plenty of users, then it might take ages to loop through it this way.
+3. You will have to deliver a temporary password to your user.
 
 {{< alert >}}
 **Keep in mind**
 {{< /alert >}}
-1. Users with `FORCE_CHANGE_PASSWORD` confirmation status **WILL NOT** be able to start [Forgot Password](https://repost.aws/knowledge-center/cognito-forgot-password) flow. That's why it's important that you send them temporary password.
-2. In this snippet I haven't set `email_verified` nor `phone_number_verified`, set those accordingly to your business logic
+1. Users with `FORCE_CHANGE_PASSWORD` confirmation status **WILL NOT** be able to start the [Forgot Password](https://repost.aws/knowledge-center/cognito-forgot-password) flow. That's why it's important that you send them a temporary password.
+2. In this snippet, I haven't set `email_verified` nor `phone_number_verified`. Set those accordingly to your business logic.
 
 ### Advantages & Disadvantages
-| Advantages                                           | Disadvantages                                       |
-|------------------------------------------------------|-----------------------------------------------------|
-| &#128077; you can import all users at this same time | &#128078; user is unable to use old password        |
-| &#128077; simple implementation                      | &#128078; user unable to use "Forgot Password" flow |
+| Advantages                                           | Disadvantages                                |
+|------------------------------------------------------|----------------------------------------------|
+| &#128077; you can import all users at the same time  | &#128078; user is unable to use the old password |
+| &#128077; simple implementation                      |                                              |
+| &#128077; user able to use "Forgot Password" flow    |                                              |
 
-### Create user with `CONFIRMED` confirmation status
+### Create User with `CONFIRMED` Confirmation Status
 Another variation of SDK import is creating a user with `CONFIRMED` confirmation status. You might want to do that in two cases:
-1. You are able to set password from legacy database
-2. You want to have users in `CONFIRMED` confirmation status, as that will let them use "Forgot Password" flow.
+1. You are able to set the password from the legacy database.
+2. You want to have users in `CONFIRMED` confirmation status, as that will let them use the "Forgot Password" flow.
 
-First case is rather simple, you have (in fact you shouldn't) access to user's unencrypted password and you're able to set it in new pool.
+The first case is rather simple; you have (in fact, you shouldn't) access to the user's unencrypted password and you're able to set it in the new pool.
 
-Other case is slightly more complex, you don't have access to user's unencrypted password, you also don't really want to send them temporary one, but you want them to be able to use "Forgot Password" and reset it themselves.
-Sounds complicated? Trust me, sometimes business requirements can be crazy ;)
+The other case is slightly more complex; you don't have access to the user's unencrypted password, and you also don't really want to send them a temporary one, but you want them to be able to use the "Forgot Password" and reset it themselves.
+Sounds complicated? Trust me, sometimes business requirements can be crazy.
 
-You can create such user with this code:
+You can create such a user with this code:
+
 ```python
 import boto3
 
@@ -183,30 +182,30 @@ for user in fetch_users():
         Permanent=True
     )
 ```
-
-That's it. Your user is created. In Cognito it will look like:
+That's it. Your user is created. In Cognito, it will look like:
 ![Cognito User](/img/migrate-users-to-cognito-pool/2.png)
 
-So as you can see the only difference is the call to `admin_set_user_password`. This way we set permanent user's password, and they can use "Forgot Password" flow.
+So as you can see, the only difference is the call to `admin_set_user_password`. This way we set the permanent user's password, and they can use the "Forgot Password" flow.
 
 {{< alert >}}
 **Keep in mind**
 {{< /alert >}}
 
-1. In this snippet I haven't set `email_verified` nor `phone_number_verified`, set those accordingly to your business logic
+1. In this snippet, I haven't set `email_verified` nor `phone_number_verified`. Set those accordingly to your business logic.
 
 ### Advantages & Disadvantages
 | Advantages                                           | Disadvantages                                |
 |------------------------------------------------------|----------------------------------------------|
-| &#128077; you can import all users at this same time | &#128078; user is unable to use old password |
+| &#128077; you can import all users at the same time  | &#128078; user is unable to use the old password |
 | &#128077; simple implementation                      |                                              |
-| &#128077; user able to use "Forgot Password" flow    |                                              |
+| &#128077; user able to use the "Forgot Password" flow |                                              |
 
-## Import users from a CSV file
-AWS provides a way to import users [through a CSV file](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-using-import-tool.html?icmpid=docs_cognito_console_help_panel). 
-You download CSV template from Cognito, dump all users from legacy database in that format, upload it and rest is handled by AWS.
+## Import Users from a CSV File
+AWS provides a way to import users [through a CSV file](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-using-import-tool.html?icmpid=docs_cognito_console_help_panel).
+You download a CSV template from Cognito, dump all users from the legacy database in that format, upload it, and the rest is handled by AWS.
 
-Example of template looks like:
+An example of the template looks like:
+
 ```csv
 name,given_name,family_name,middle_name,nickname,preferred_username,profile,picture,website,email,email_verified,gender,birthdate,zoneinfo,locale,phone_number,phone_number_verified,address,updated_at,cognito:mfa_enabled,cognito:username
 Daniel Ancuta,,,,,,,,,whisller@gmail.com,TRUE,,,,,,FALSE,,,,whisller@gmail.com%
@@ -224,4 +223,4 @@ After your import job finished successfully in Cognito it will look like:
 
 
 ## The end
-That's it! Hope you had found something useful in this post! If your company needs some help with AWS [Get in touch]({{< ref "/contact" >}} "Get in touch").
+That's it! I hope you found something useful in this post! If your company needs some help with AWS, [get in touch]({{< ref "/contact" >}} "Get in touch").
