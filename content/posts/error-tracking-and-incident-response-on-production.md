@@ -6,29 +6,27 @@ description = "Error tracking and incident response on production with Sentry + 
 tags = ["sentry", "squadcast", "linear", "slack", "production incident", "error monitoring"]
 +++
 
-There is multiple strategies to mitigate number of bugs and problems with the app on production.
-Some teams focus on unit tests, functional tests, integration tests, manual tests, multiple environments 
-to run those and build artifact of the app. Processes to review code, static code analysis, CI/CD pipelines and so on and so on. 
+There are multiple strategies to mitigate the number of bugs and problems with the app in production. Some teams focus on unit tests, functional tests, integration tests, manual tests, multiple environments to run those, and build the artifact of the app. Processes for reviewing code, static code analysis, CI/CD pipelines, and so on and so forth.
 
-There is dozens of different approaches you can take, all are dependent on project you're building, company's budget or people's skills.
+There are dozens of different approaches you can take, all of which depend on the project you're building, the company's budget, or people's skills.
 
-But regardless on your approach or skills, there is quite likely that sooner or later your application will face some problems. It can be unhandled exception, third party API that is not working as it used to or bug in your app.
+But regardless of your approach or skills, it is quite likely that sooner or later your application will face some problems. It could be an unhandled exception, a third-party API that is not working as it used to, or a bug in your app.
 
-That's why very important is to:
-> Be aware of your platform's health and react to incidents that occur, ideally before your users will notice, to maintain trust with your customers.
+That's why it is very important to:
+> Be aware of your platform's health and react to incidents that occur, ideally before your users will notice, to maintain trust with them.
 
 ## Alerting & Monitoring
-As with assuring quality of your application, there is dozens of different ways to handle alerting and monitoring.
+Just as with assuring the quality of your application, there are dozens of different ways to handle alerting and monitoring.
 
-CloudWatch, PagerDuty, Datadog, New Relic, Sentry just to name a few. Dozens of possible configurations and combinations of tools. 
+CloudWatch, PagerDuty, Datadog, New Relic, Sentry, just to name a few. There are dozens of possible configurations and combinations of tools.
 
-Today I would like to focus on three tools that together, or separately, can help you with Alerting & Monitoring.
+Today, I would like to focus on three tools that, together or separately, can help you with Alerting & Monitoring.
 
 [Sentry](https://sentry.io/), [squadcast](https://www.squadcast.com/), [slack](https://slack.com/), and [Linear](https://linear.app).
 
 ## How to integrate Sentry + Squadcast + Slack + Linear
 
-All those tools separately brings a lot of value for your project. But the true power sits in integrating them together. 
+All of these tools separately bring a lot of value to your project. However, the true power lies in integrating them together.
 
 {{< mermaid >}}
 flowchart TD
@@ -40,63 +38,61 @@ flowchart TD
     E -->|Create Incident| F[Escalation policy is triggered]
 {{< /mermaid >}}
 
-So what really happened in here?
+So, what really happened here?
 
-1. Your App (microservice, docker container, frontend app etc.) throws an exception
-2. Sentry catches it and based on project's alert rule sends notification about it to Slack and Linear
-3. Slack API receives HTTP request and sends message to channel that your team follows, e.g. `#alerts-production`
-4. Linear creates ticket from sentry issue in separated team e.g. `issues:prod`
-5. Squadcast is being notified through webhook about new Linear ticket and creates incident which triggers configured escalation policy
+1. Your app (microservice, Docker container, frontend app, etc.) throws an exception.
+2. Sentry catches it and, based on the project's alert rules, sends a notification about it to Slack and Linear.
+3. The Slack API receives an HTTP request and sends a message to the channel that your team follows, e.g., `#alerts-production`.
+4. Linear creates a ticket from the Sentry issue in a separate team, e.g., `issues:prod`.
+5. Squadcast is notified through a webhook about the new Linear ticket and creates an incident, triggering the configured escalation policy.
 
-This way we connected 4 systems that will help you improve awareness of your platform's health, and, hopefully, maintain trust with your customers.
+This way, we've connected four systems that will help you improve awareness of your platform's health and, hopefully, maintain trust with your customers.
 
-Let us go through specified components of this flow and its, selected, features and configuration. That can be useful during process of setting up whole flow. 
+Let's go through the specified components of this flow and their selected features and configuration. These can be useful during the process of setting up the whole flow.
 
 ### Sentry
-Sentry is great error tracker, but not only, it also has profiling, replays of sessions that caused problems (on frontend), cron monitoring, dashboards, alerting and few extra things more.
-Those components are available for multiple languages and frameworks.
+Sentry is a great error tracker, but it offers more than that. It also provides profiling, replays of sessions that caused problems (on the frontend), cron monitoring, dashboards, alerting, and a few other features. These components are available for multiple languages and frameworks.
 
-But what we're really interested in during this exercise are two components, error tracking and alerting.
+What we're particularly interested in during this exercise are two components: error tracking and alerting.
 
-Setting up alerts is very easy, you can find it in "Alerts -> Create Alert" section. It should look similar to:
+Setting up alerts is very easy. You can find it in the "Alerts -> Create Alert" section. It should look similar to:
 ![Sentry Alerting](/img/sentry-linear-squadcast/sentry-alerting.png)
 
-This way every new or regression issue will trigger alert. As you can see setting up it in Sentry is really easy. 
+This way, every new or regression issue will trigger an alert. As you can see, setting it up in Sentry is really easy.
 
-One obstacle you might find is when you have microservice environment with plenty of sentry projects.
-You need to setup those alerts on every single project separately, as sentry does not allow you to have global rules. And as all of us know, number of microservices can grow rapidly. 
+One obstacle you might encounter is when you have a microservices environment with plenty of Sentry projects. You need to set up those alerts on every single project separately, as Sentry does not allow you to have global rules. And as we all know, the number of microservices can grow rapidly.
 
-What worked for me is to write wrapper on top of Sentry REST API and automate the process. Which can be done as a part of your CI/CD.
+What worked for me is to write a wrapper on top of the Sentry REST API and automate the process. This can be done as a part of your CI/CD.
 
-For that I wrote python library [sentry-api-python](https://github.com/epsylabs/sentry-api-python), that should help you with this process.
+For that purpose, I wrote a Python library called [sentry-api-python](https://github.com/epsylabs/sentry-api-python), which should help you with this process.
 
 ### Slack
-Slack is great team collaboration tool. With its API it's also great tool that you can integrate with. That's something that we can use in our "Alerting & Monitoring" flow.
+Slack is a great team collaboration tool. With its API, it's also a great to integrate with. That's something that we can use in our "Alerting & Monitoring" flow.
 
-I suggest to have, separated channel, where all production problems can be found and people can be notified. Place where first conversations about severity and solutions for the problem starts.
+I suggest having a separate channel where all production problems can be found, and people can be notified. This is the place where the first conversations about severity and solutions for the problem start.
 
-That's how example of the message will look like:
+Here's how an example of the message will look like:
 ![Slack Message](/img/sentry-linear-squadcast/slack-message.png)
 
 ### Linear
 I use [Linear](https://linear.app/) in the flow for multiple reasons:
-1. Being a bridge between Sentry and Squadcast
-2. Have a single place where you can prioritise issues (not all problems on production are equally important)
-3. Keep a track of historical issues (for reporting)
-4. Easier to share and be transparent with product owners/project managers for allocation of people to fix those issues
-5. Keep a track of status of work for specified issue. Any change to status of ticket made in Linear is reflected in both Sentry and Squadcast
+1. It acts as a bridge between Sentry and Squadcast.
+2. It provides a single place where you can prioritize issues (not all problems on production are equally important).
+3. It keeps track of historical issues for reporting.
+4. It makes it easier to share and be transparent with product owners and project managers for allocating people to fix those issues.
+5. It keeps track of the status of work for specified issues. Any change to the status of a ticket made in Linear is reflected in both Sentry and Squadcast.
 
 ### Squadcast
-Last, but not least, [Squadcast](https://squadcast.com). That's relatively new tool for me, which look super promising!
+Last but not least, [Squadcast](https://squadcast.com). This is a relatively new tool for me, which looks super promising!
 
-It allows you to gather alerts from different sources, currently they have more than 166 integrations available. What I really liked about this tool, it has good "on call" schedule module, with flexible escalation policy.
-With those two modules of Squadcast you get powerful tool that notifies your team about platform's health.
+It allows you to gather alerts from different sources, and currently, they have more than 166 integrations available. What I really like about this tool is its "on-call" schedule module and flexible escalation policy.
 
-I could write post on its own about only squadcast, so if you haven't used or heard about it, I recommend checking it.
+With these two modules of Squadcast, you get a powerful tool that notifies your team about the platform's health.
 
-### Final thoughts
-Every tool used in this flow can be replaced or removed, in fact you could change the whole flow completely.
-But what is important is to understand tools you're using and how you can connect them together to give your users/customers better experience, and to make you **aware of your platform's health** and **react quicker than your users**.
+I could write a post on its own about Squadcast, so if you haven't used or heard about it, I recommend checking it out.
 
-## The end
+### Final Thoughts
+Every tool used in this flow can be replaced or removed. In fact, you could change the whole flow completely. But what's important is to understand the tools you're using and how you can connect them together to give your users/customers a better experience by being aware of your platform's health and react quicker than your users do.
+
+## The End
 That's it! Let's keep your platform healthy :) If your company needs some help with Alerting & Monitoring, [get in touch]({{< ref "/contact" >}} "Get in touch").
