@@ -3,7 +3,7 @@ author = "Daniel Ancuta"
 title = "Strategies to Migrate Users to AWS Cognito Pool"
 date = "2023-06-01"
 description = "Strategies to Migrate Users to AWS Cognito Pool"
-tags= ["aws", "aws cognito"]
+tags = ["aws", "aws cognito"]
 +++
 
 If you work in the AWS ecosystem, sooner or later, you will deal with [AWS Cognito](https://aws.amazon.com/cognito/).
