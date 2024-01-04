@@ -11,7 +11,7 @@ But what are the few basic principles of communication where, at least, two part
 
 Ok, but how that's connected to Protocol Buffers, WebSockets, AWS?
 
-Systems built nowadays use different technologies and languages. You might see Python/PHP/Java on the backend, JavaScript/Swift/Kotlin on frontend (including mobile) apps. It's expected that the backend and frontend communicate with each other in real time and are able to share data without things "getting lost in translation".
+Systems built nowadays use different technologies and languages. You might see Python/PHP/Java/etc. on the backend, JavaScript/Swift/Kotlin/etc. on frontend (including mobile) apps. It's expected that the backend and frontend communicate with each other in real time and are able to share data without loosing semantic e.g. double data type.
 
 ## How?
 To show how it could be done programmatically, we will build a simple backend service that allows you to fetch the geolocation of a few places in the world. I will use __Python__, __AWS Lambda__ + __AWS API Gateway__, __WebSockets__, and __[serverless.com](https://www.serverless.com/)__ to achieve that.
@@ -19,9 +19,9 @@ To show how it could be done programmatically, we will build a simple backend se
 If you want to go straight to code, you can clone/fork [github.com/whisller/article-protocol-buffers-aws-lambda](https://github.com/whisller/article-protocol-buffers-aws-lambda).
 
 ## Protocol Buffers
-Our communication wouldn't be successful if we would not agree on a common vocabulary. It could be even worse if we would have slight details lost in translation, that could lead to unpredictable problems that could be hard to track down.
+Our communication wouldn't be successful if we would not agree on a common vocabulary, same comes if different technologies/languages sharing data would interpret it differently. That could lead to unpredictable problems that could be hard to track down.
 
-Idea behind Protocol Buffers is to give you a tool that will let you serialize data in e.g. Java, and send it through the network, or store it in a database (file, database etc.) for later use by different language e.g. PHP without losing data structure/format.
+Idea behind Protocol Buffers is to give you a tool that will let you serialize data and send it through the network, or get this serialized data and store it in a database (file, database etc.) for later use, without losing its structure/format.
 
 Protocol Buffers is not the only tool that does that. Have also a look at [Apache Avro](https://avro.apache.org/), [Cap'N Proto](https://capnproto.org/), [FlatBuffers](https://flatbuffers.dev/).
 Even though the main idea behind them is very similar, they differ quite a lot. So it's always good to do an assessment before choosing your tool.
@@ -84,21 +84,16 @@ I've split the definition of RPC from the service for easier maintenance and rea
 
 You can also see the custom type `google.type.LatLng` being used. This comes from [googleapis/googleapis](https://github.com/googleapis/googleapis), which contains quite a lot of useful types.
 
-If your `protoc` is showing an error like:
-```Bash
-google/type/latlng.proto: File not found.
-service.proto:6:1: Import "google/type/latlng.proto" was not found or had errors.
-service.proto:28:3: "google.type.LatLng" is not defined.
-```
+Make sure that those are included when you generate code out of `*.proto` files. You can do that by checking out [googleapis/googleapis](https://github.com/googleapis/googleapis) locally.
 
-Make sure that you:
-1. Checkout [googleapis/googleapis](https://github.com/googleapis/googleapis)
-2. Include it as import with `-I` e.g. `protoc -I=./googleapis`
+At this point you should have [protoc](https://grpc.io/docs/protoc-installation/) installed.
 
-If everything is in order, this command should generate Python files inside the `protobuf_classes` directory:
+We can now test if our Protocol Buffers schema is correct:
 ```Bash
 protoc -I=proto -I=./googleapis --python_out=protobuf_classes proto/*.proto
 ```
+
+If everything was fine, this command should generate Python files inside the `protobuf_classes` directory (please create this directory beforehand):
 
 {{< alert >}}
 **Keep in mind**
@@ -263,6 +258,8 @@ def service_GetRandom(params: rpc_pb2.RPCCallParams):
 
 ## Final Thoughts
 If you want to see an example project that you can deploy, please visit [whisller/article-protocol-buffers-aws-lambda](https://github.com/whisller/article-protocol-buffers-aws-lambda).
+
+There is also example of [python client](https://github.com/whisller/article-protocol-buffers-aws-lambda/blob/main/client.py) that you can use to communicate with WebSockets server.
 
 Obviously, it's not an application that I would recommend putting into production. Still, it should give you a good understanding of starting to build your own WebSocket communication with Protocol Buffers in the AWS Lambda ecosystem.
 
