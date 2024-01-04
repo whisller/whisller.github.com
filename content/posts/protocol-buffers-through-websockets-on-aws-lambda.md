@@ -23,7 +23,9 @@ Our communication wouldn't be successful if we would not agree on a common vocab
 
 Protocol Buffers is a tool that lets you serialize data and send it through the network, or you can save this data in a database (file, database etc.) for later use, without losing its structure/format.
 
-Protocol Buffers is not the only tool that does that. There is at least few that tries to achieve similar goal, but they differ in dealing with data: 
+Protocol Buffers is not the only tool that does that. There is at least few that tries to achieve similar goal, but they differ in dealing with data.
+
+To list some of them:
 * [Apache Avro](https://avro.apache.org/)
 * [Cap'N Proto](https://capnproto.org/)
 * [FlatBuffers](https://flatbuffers.dev/).
