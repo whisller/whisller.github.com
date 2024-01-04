@@ -5,39 +5,36 @@ description: "Protocol Buffers RPC calls through WebSockets on AWS Lambda with A
 tags: ["protocol buffers", "websockets", "aws", "lambda", "python"]
 ---
 
-We might argue what is important aspect of good communication.
+We might argue about what is the important aspect of good communication.
 
-But what are few basic principles of communication where, at least, two parties will understand each other? Use of same __*Glossary*__, happens in __*Real Time*__ and uses __*Same language*__.
+But what are the few basic principles of communication where, at least, two parties will understand each other? Use of the same __*Glossary*__, happens in __*Real Time*__ and uses __*Same language*__.
 
-Ok, but how that's connected to Protocol Buffers, WebSockets, AWS? 
+Ok, but how that's connected to Protocol Buffers, WebSockets, AWS?
 
-Systems built nowadays use different technologies and languages. You might see Python/PHP/Java on backend, JavaScript/Swift/Kotlin on frontend (including mobile) apps. It's expected that
-backend and frontend communicate with each other in real time and are able to share data without things "getting lost in translation".
+Systems built nowadays use different technologies and languages. You might see Python/PHP/Java on the backend, JavaScript/Swift/Kotlin on frontend (including mobile) apps. It's expected that the backend and frontend communicate with each other in real time and are able to share data without things "getting lost in translation".
 
 ## How?
-To show how it could be done programmatically we will build simple backend service that allows you to fetch geolocation of few places in the world. I will use __Python__, __AWS Lambda__ + __AWS API Gateway__, __WebSockets__ and __[serverless.com](https://www.serverless.com/)__ to achieve that.
+To show how it could be done programmatically, we will build a simple backend service that allows you to fetch the geolocation of a few places in the world. I will use __Python__, __AWS Lambda__ + __AWS API Gateway__, __WebSockets__, and __[serverless.com](https://www.serverless.com/)__ to achieve that.
 
 If you want to go straight to code, you can clone/fork [github.com/whisller/article-protocol-buffers-aws-lambda](https://github.com/whisller/article-protocol-buffers-aws-lambda).
 
 ## Protocol Buffers
-Our communication wouldn't be successful if we would not agree on common vocabulary. It could be even worst if we would have slight details lost in translation, that could lead to
-unpredictable problems that could be hard to track down.
+Our communication wouldn't be successful if we would not agree on a common vocabulary. It could be even worse if we would have slight details lost in translation, that could lead to unpredictable problems that could be hard to track down.
 
-Idea behind Protocol Buffers is to give you a tool that will let you serialise data in e.g. Java, and send it through
-network, or store it in database (file, database etc.) for later use by different language e.g. PHP without loosing
-data structure/format.
+Idea behind Protocol Buffers is to give you a tool that will let you serialize data in e.g. Java, and send it through the network, or store it in a database (file, database etc.) for later use by different language e.g. PHP without losing data structure/format.
 
 Protocol Buffers is not the only tool that does that. Have also a look at [Apache Avro](https://avro.apache.org/), [Cap'N Proto](https://capnproto.org/), [FlatBuffers](https://flatbuffers.dev/).
-Even though main idea behind them is very similar, they differ quite a lot. So it's always good to do assessment before choosing your tool.
+Even though the main idea behind them is very similar, they differ quite a lot. So it's always good to do an assessment before choosing your tool.
 
 ### Schema
-Schema will allow us to define RPC methods and data structure that we will send through network.
+Schema will allow us to define RPC methods and data structure that we will send through the network.
 
 #### RPC (Remote Procedure Call)
-When you hear "Protocol Buffers" and "RPC" first thing that comes to your mind is [gRPC](https://grpc.io/), isn't it? :) 
-But I have zero experience with setting it up in AWS Lambda context, with WebSockets on top of it, it might be even more challenging. 
+When you hear "Protocol Buffers" and "RPC" the first thing that comes to your mind is [gRPC](https://grpc.io/), isn't it? :)
+But I have zero experience with setting it up in AWS Lambda context, with WebSockets on top of it, it might be even more challenging.
 
-So we will try simpler approach, use of Protocol Buffers message to encapsulate information about invoked function and passed parameters.
+So we will try a simpler approach, use of Protocol Buffers message to encapsulate information about invoked function and passed parameters.
+
 
 ```proto
 // proto/rpc.proto
@@ -83,11 +80,11 @@ service InterestingPlaces {
 }
 ```
 
-I've split definition of RPC from service, for easier maintenance and readability.
+I've split the definition of RPC from the service for easier maintenance and readability.
 
-You can also see custom type `google.type.LatLng` used. This come from [googleapis/googleapis](https://github.com/googleapis/googleapis) which contains quite a lot of useful types.
+You can also see the custom type `google.type.LatLng` being used. This comes from [googleapis/googleapis](https://github.com/googleapis/googleapis), which contains quite a lot of useful types.
 
-If your `protoc` is complaining with error like:
+If your `protoc` is showing an error like:
 ```Bash
 google/type/latlng.proto: File not found.
 service.proto:6:1: Import "google/type/latlng.proto" was not found or had errors.
@@ -98,7 +95,7 @@ Make sure that you:
 1. Checkout [googleapis/googleapis](https://github.com/googleapis/googleapis)
 2. Include it as import with `-I` e.g. `protoc -I=./googleapis`
 
-If all is good, this command should generate you some python files inside of `protobuf_classes` directory:
+If everything is in order, this command should generate Python files inside the `protobuf_classes` directory:
 ```Bash
 protoc -I=proto -I=./googleapis --python_out=protobuf_classes proto/*.proto
 ```
@@ -114,15 +111,16 @@ protoc -I=proto -I=./googleapis --python_out=protobuf_classes proto/*.proto
 1. [googleapis/googleapis](https://github.com/googleapis/googleapis)
 
 ## AWS Lambda + WebSockets
-As we have Protocol Buffers schema that is contract between backend and clients, we can build our backend side of it.
+As we have a Protocol Buffers schema that serves as the contract between the backend and clients, we can now build the backend side of it.
 
-To handle CloudFormation on the AWS I will use [serverless.com](https://www.serverless.com/) framework.
+For handling CloudFormation on AWS, I will use the [serverless.com](https://www.serverless.com/) framework.
 
-### Routing messages from client to server handler
-API Gateway for WebSockets has a concept of routing messages. There are also three, predefined routes, that we can use:
-* `$connect`, when new connection from client is initiated
-* `$disconnect`, when connection is closed by either client or server
-* `$default`, when there is no other matching route
+### Routing Messages from Client to Server Handler
+API Gateway for WebSockets introduces the concept of routing messages. There are three predefined routes that we can use:
+* `$connect`: triggered when a new connection from the client is initiated
+* `$disconnect`: triggered when the connection is closed by either the client or the server
+* `$default`: triggered when there is no other matching route
+
 
 #### serverless.yml
 ```yaml
@@ -142,11 +140,11 @@ functions:
           route: $default
 ```
 
-This way we route `$connect` and `$disconnect` to one lambda, which can be used to manage sessions.
-And all other messages, in our case Protocol Buffers messages, will be routed to `$default`.
+This way, we route `$connect` and `$disconnect` to one lambda, which can be used to manage sessions. All other messages, in our case Protocol Buffers messages, will be routed to `$default`.
 
-### Granting permission to send message back from server to connected client
-In order to send message back from server to client we need to grant permission for role that executes lambda.
+### Granting Permission to Send Messages Back from Server to Connected Clients
+To send messages back from the server to the client, we need to grant permission to the role that executes the lambda.
+
 
 #### serverless.yml
 
@@ -209,13 +207,14 @@ def handle(event, context):
     session.post(f"/{stage}/@connections/{connection_id}", data=encoded_response)
 ```
 
-I believe that code is self-explanatory, what we do is: 
-1. Decode message
-2. Map it with Protocol Buffers schema
-3. Call our python function based on message's payload and get Protocol Buffers response
-4. We're signing response message with [Signature Version 4 (SigV4)](https://docs.aws.amazon.com/IAM/latest/UserGuide/create-signed-request.html) and sending it back to client
+I believe the code is self-explanatory. Here's a breakdown of what we do:
+1. Decode the message.
+2. Map it with the Protocol Buffers schema.
+3. Call our Python function based on the message's payload and obtain the Protocol Buffers response.
+4. Sign the response message using [Signature Version 4 (SigV4)](https://docs.aws.amazon.com/IAM/latest/UserGuide/create-signed-request.html) and send it back to the client.
 
 Our service could be as simple as:
+
 ```Python
 import random
 
@@ -262,11 +261,10 @@ def service_GetRandom(params: rpc_pb2.RPCCallParams):
 {{< /alert >}}
 1. [Invoking a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api.html)
 
+## Final Thoughts
+If you want to see an example project that you can deploy, please visit [whisller/article-protocol-buffers-aws-lambda](https://github.com/whisller/article-protocol-buffers-aws-lambda).
 
-## Final thoughts
-If you want to see example project that you can deploy, please visit [whisller/article-protocol-buffers-aws-lambda](https://github.com/whisller/article-protocol-buffers-aws-lambda).
+Obviously, it's not an application that I would recommend putting into production. Still, it should give you a good understanding of starting to build your own WebSocket communication with Protocol Buffers in the AWS Lambda ecosystem.
 
-Obviously it's not application that I would recommend putting on `prod`. But it should give you good understanding in starting building your own WebSockets communication with Protocol Buffers in AWS Lambda ecosystem.
-
-## The end
+## The End
 That's it! I hope you found something useful in this post! If your company needs some help with AWS, [get in touch]({{< ref "/contact" >}} "Get in touch").
