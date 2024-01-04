@@ -14,26 +14,30 @@ Ok, but how that's connected to Protocol Buffers, WebSockets, AWS?
 Systems built nowadays use different technologies and languages. You might see Python/PHP/Java/etc. on the backend, JavaScript/Swift/Kotlin/etc. on frontend (including mobile) apps. It's expected that the backend and frontend communicate with each other in real time and are able to share data without loosing semantic e.g. double data type.
 
 ## How?
-To show how it could be done programmatically, we will build a simple backend service that allows you to fetch the geolocation of a few places in the world. I will use __Python__, __AWS Lambda__ + __AWS API Gateway__, __WebSockets__, and __[serverless.com](https://www.serverless.com/)__ to achieve that.
+To show how it could be done programmatically, we will build a simple backend service that returns the geolocation of a few places in the world. I will use __Python__, __AWS Lambda__ + __AWS API Gateway__, __WebSockets__, and __[serverless.com](https://www.serverless.com/)__ to achieve that.
 
 If you want to go straight to code, you can clone/fork [github.com/whisller/article-protocol-buffers-aws-lambda](https://github.com/whisller/article-protocol-buffers-aws-lambda).
 
 ## Protocol Buffers
-Our communication wouldn't be successful if we would not agree on a common vocabulary, same comes if different technologies/languages sharing data would interpret it differently. That could lead to unpredictable problems that could be hard to track down.
+Our communication wouldn't be successful if we would not agree on a common vocabulary, same comes if different technologies/languages sharing data would interpret it differently. That bugs lead to unpredictable problems that could be hard to track down.
 
-Idea behind Protocol Buffers is to give you a tool that will let you serialize data and send it through the network, or get this serialized data and store it in a database (file, database etc.) for later use, without losing its structure/format.
+Protocol Buffers is a tool that lets you serialize data and send it through the network, or you can save this data in a database (file, database etc.) for later use, without losing its structure/format.
 
-Protocol Buffers is not the only tool that does that. Have also a look at [Apache Avro](https://avro.apache.org/), [Cap'N Proto](https://capnproto.org/), [FlatBuffers](https://flatbuffers.dev/).
-Even though the main idea behind them is very similar, they differ quite a lot. So it's always good to do an assessment before choosing your tool.
+Protocol Buffers is not the only tool that does that. There is at least few that tries to achieve similar goal, but they differ in dealing with data: 
+* [Apache Avro](https://avro.apache.org/)
+* [Cap'N Proto](https://capnproto.org/)
+* [FlatBuffers](https://flatbuffers.dev/).
+
+So before choosing tool check their props & cons.
 
 ### Schema
-Schema will allow us to define RPC methods and data structure that we will send through the network.
+Protocol Buffers schema allows us to define data structure for messages that we will send from client to backend and back, through WebSocket connection.
 
 #### RPC (Remote Procedure Call)
 When you hear "Protocol Buffers" and "RPC" the first thing that comes to your mind is [gRPC](https://grpc.io/), isn't it? :)
-But I have zero experience with setting it up in AWS Lambda context, with WebSockets on top of it, it might be even more challenging.
+But today I will not talk about gRPC, main reason for it is that I haven't tried to set up it in AWS ecosystem, so my experience on this field is close to zero.
 
-So we will try a simpler approach, use of Protocol Buffers message to encapsulate information about invoked function and passed parameters.
+I will take different approach, use of Protocol Buffers message to encapsulate information about invoked function and passed parameters.
 
 
 ```proto
@@ -82,36 +86,24 @@ service InterestingPlaces {
 
 I've split the definition of RPC from the service for easier maintenance and readability.
 
-You can also see the custom type `google.type.LatLng` being used. This comes from [googleapis/googleapis](https://github.com/googleapis/googleapis), which contains quite a lot of useful types.
+You can also see the custom type `google.type.LatLng` being used. That's one of the types defined in [googleapis/googleapis](https://github.com/googleapis/googleapis).
 
-Make sure that those are included when you generate code out of `*.proto` files. You can do that by checking out [googleapis/googleapis](https://github.com/googleapis/googleapis) locally.
-
-At this point you should have [protoc](https://grpc.io/docs/protoc-installation/) installed.
+At this point you should have:
+* [protoc](https://grpc.io/docs/protoc-installation/) installed
+* [googleapis/googleapis](https://github.com/googleapis/googleapis) checked out locally (to be used by `protoc`)
 
 We can now test if our Protocol Buffers schema is correct:
 ```Bash
 protoc -I=proto -I=./googleapis --python_out=protobuf_classes proto/*.proto
 ```
 
-If everything was fine, this command should generate Python files inside the `protobuf_classes` directory (please create this directory beforehand):
-
-{{< alert >}}
-**Keep in mind**
-{{< /alert >}}
-1. "Why not to use `google.protobuf.service` instead?", as of `2.3.0` of Protocol Buffers [google.protobuf.service](https://googleapis.dev/python/protobuf/latest/google/protobuf/service.html#module-google.protobuf.service) is deprecated. Recommended way of dealing with it is to write your plugin to generate code.
-
-{{< alert "circle-info" >}}
-**Worth reading**
-{{< /alert >}}
-1. [googleapis/googleapis](https://github.com/googleapis/googleapis)
+If everything is correct, this command will generate Python files inside the `protobuf_classes` directory.
 
 ## AWS Lambda + WebSockets
-As we have a Protocol Buffers schema that serves as the contract between the backend and clients, we can now build the backend side of it.
-
 For handling CloudFormation on AWS, I will use the [serverless.com](https://www.serverless.com/) framework.
 
 ### Routing Messages from Client to Server Handler
-API Gateway for WebSockets introduces the concept of routing messages. There are three predefined routes that we can use:
+API Gateway for WebSockets has a concept of routing messages. There are three predefined routes that we can use:
 * `$connect`: triggered when a new connection from the client is initiated
 * `$disconnect`: triggered when the connection is closed by either the client or the server
 * `$default`: triggered when there is no other matching route
@@ -135,11 +127,16 @@ functions:
           route: $default
 ```
 
-This way, we route `$connect` and `$disconnect` to one lambda, which can be used to manage sessions. All other messages, in our case Protocol Buffers messages, will be routed to `$default`.
+{{< alert "circle-info" >}}
+**Worth reading**
+{{< /alert >}}
+1. [About WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html), AWS documentation
+2. [WebSockets](https://www.serverless.com/framework/docs/providers/aws/events/websocket), serverless.com documentation
+
+This way, we route `$connect` and `$disconnect` to one lambda, which can be used to manage sessions. All other events, will be routed to `$default`.
 
 ### Granting Permission to Send Messages Back from Server to Connected Clients
 To send messages back from the server to the client, we need to grant permission to the role that executes the lambda.
-
 
 #### serverless.yml
 
@@ -156,20 +153,13 @@ provider:
             - - arn:aws:execute-api:${aws:region}:${aws:accountId}:*/${sls:stage}/POST/@connections/*
 ```
 
-{{< alert >}}
-**Keep in mind**
-{{< /alert >}}
-1. Binary frames are not supported by API Gateway. You can read about it in [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html)
-
 {{< alert "circle-info" >}}
 **Worth reading**
 {{< /alert >}}
-1. [About WebSocket APIs in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html), AWS documentation
-2. [WebSockets](https://www.serverless.com/framework/docs/providers/aws/events/websocket), serverless.com documentation
-3. [Sending data from backend services to connected clients](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-data-from-backend.html)
+1. [Using IAM authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-control-access-iam.html)
 
 ### Lambda handler for WebSocket communication
-With Protocol Buffers schema and CloudFormation definition being ready, we can implement some python code.
+Lambda handler is a place that will listen to API Gateway events and will let us communicate back to client through open WebSocket connection.
 
 ```Python
 import base64
@@ -202,13 +192,24 @@ def handle(event, context):
     session.post(f"/{stage}/@connections/{connection_id}", data=encoded_response)
 ```
 
-I believe the code is self-explanatory. Here's a breakdown of what we do:
+Here's a breakdown of what this lambda function does:
 1. Decode the message.
-2. Map it with the Protocol Buffers schema.
-3. Call our Python function based on the message's payload and obtain the Protocol Buffers response.
-4. Sign the response message using [Signature Version 4 (SigV4)](https://docs.aws.amazon.com/IAM/latest/UserGuide/create-signed-request.html) and send it back to the client.
+2. Map it to the Protocol Buffers `RPCCall` message
+3. Based on `RPCCall.method` calls corresponding service function that executes business logic and returns back prepared `Response` Protocol Buffers message
+4. Sign the message using [Signature Version 4 (SigV4)](https://docs.aws.amazon.com/IAM/latest/UserGuide/create-signed-request.html) and sends it back to the client through open WebSockets connection
 
-Our service could be as simple as:
+{{< alert >}}
+**Keep in mind**
+{{< /alert >}}
+1. Binary frames are not supported by API Gateway. You can read about it in [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html)
+
+{{< alert "circle-info" >}}
+**Worth reading**
+{{< /alert >}}
+1. [Sending data from backend services to connected clients](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-data-from-backend.html)
+
+
+Our service function could be as simple as:
 
 ```Python
 import random
@@ -259,9 +260,9 @@ def service_GetRandom(params: rpc_pb2.RPCCallParams):
 ## Final Thoughts
 If you want to see an example project that you can deploy, please visit [whisller/article-protocol-buffers-aws-lambda](https://github.com/whisller/article-protocol-buffers-aws-lambda).
 
-There is also example of [python client](https://github.com/whisller/article-protocol-buffers-aws-lambda/blob/main/client.py) that you can use to communicate with WebSockets server.
+There is also example of [python client](https://github.com/whisller/article-protocol-buffers-aws-lambda/blob/main/client.py) that you can use to communicate with this test project.
 
-Obviously, it's not an application that I would recommend putting into production. Still, it should give you a good understanding of starting to build your own WebSocket communication with Protocol Buffers in the AWS Lambda ecosystem.
+Obviously, it's not production ready. Still I hope it gave you some starting point to build your own project.
 
 ## The End
 That's it! I hope you found something useful in this post! If your company needs some help with AWS, [get in touch]({{< ref "/contact" >}} "Get in touch").
