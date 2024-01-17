@@ -3,7 +3,7 @@ author = "Daniel Ancuta"
 title = "AWS Amplify Override Amplify-generated resources. On example with resolvers."
 date = "2024-01-17"
 description = "AWS Amplify Override Amplify-generated resources. On example with resolvers."
-tags = ["aws", "amplify", "aws appsync", "appsync resolver", "override amplify", "TypeScript"]
+tags = ["aws", "amplify", "aws appsync", "appsync resolver", "override amplify", "TypeScript", "aws cdk"]
 +++
 
 [AWS Amplify](https://aws.amazon.com/amplify/) is a great tool when you're building
