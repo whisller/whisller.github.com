@@ -91,7 +91,7 @@ With these two modules of Squadcast, you get a powerful tool that notifies your 
 
 I could write a post on its own about Squadcast, so if you haven't used or heard about it, I recommend checking it out.
 
-### Final Thoughts
+## Final Thoughts
 Every tool used in this flow can be replaced or removed. In fact, you could change the whole flow completely. But what's important is to understand the tools you're using and how you can connect them together to give your users/customers a better experience by being aware of your platform's health and react quicker than your users do.
 
 ## The End
