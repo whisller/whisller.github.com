@@ -1,7 +1,7 @@
 +++
 author = "Daniel Ancuta"
 title = "AWS Amplify Override Amplify-generated resources. On example with resolvers."
-date = "2024-01-13"
+date = "2024-01-17"
 description = "AWS Amplify Override Amplify-generated resources. On example with resolvers."
 tags = ["aws", "amplify", "aws appsync", "appsync resolver", "override amplify", "TypeScript"]
 +++
