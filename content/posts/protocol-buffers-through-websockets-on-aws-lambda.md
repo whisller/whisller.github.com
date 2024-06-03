@@ -2,7 +2,7 @@
 title: "Protocol Buffers RPC calls through WebSockets on AWS Lambda with API Gateway"
 date: 2024-01-04
 description: "Protocol Buffers RPC calls through WebSockets on AWS Lambda with API Gateway"
-tags: ["protocol buffers", "websockets", "aws", "lambda", "python"]
+tags: ["protocol buffers", "websockets", "aws", "lambda", "python", "devops"]
 ---
 
 We might argue about what is the important aspect of good communication.
