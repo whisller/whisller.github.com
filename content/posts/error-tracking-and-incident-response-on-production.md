@@ -3,7 +3,7 @@ author = "Daniel Ancuta"
 title = "Error tracking and incident response on production with Sentry + Squadcast + Linear + Slack"
 date = "2023-07-01"
 description = "Error tracking and incident response on production with Sentry + Squadcast + Linear"
-tags = ["sentry", "squadcast", "linear", "slack", "production incident", "error monitoring"]
+tags = ["sentry", "squadcast", "linear", "slack", "production incident", "error monitoring", "devops"]
 +++
 
 There are multiple strategies to mitigate the number of bugs and problems with the app in production. Some teams focus on unit tests, functional tests, integration tests, manual tests, multiple environments to run those, and build the artifact of the app. Processes for reviewing code, static code analysis, CI/CD pipelines, and so on and so forth.
