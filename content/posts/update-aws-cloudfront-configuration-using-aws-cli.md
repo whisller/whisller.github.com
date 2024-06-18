@@ -47,7 +47,7 @@ That's it! Your changes got deployed and applied.
 The If-Match version is missing or not valid for the resource.
 ```
 
-If you see this error, you have used the wrong ETag value for --if-match. After you run update-distribution, your CloudFront's ETag will change, and you will need to obtain it again.
+If you see this error, you have used the wrong ETag value for `--if-match`. After you run `update-distribution`, your CloudFront's ETag will change, and you will need to obtain it again.
 
 ## The End
 That's it! I hope you found something useful in this post! If your company needs some help with AWS, [get in touch]({{< ref "/contact" >}} "Get in touch").
