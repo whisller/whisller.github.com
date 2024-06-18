@@ -1,9 +1,9 @@
-+++
-author = "Daniel Ancuta"
-title = "First post"
-date = "2023-01-01"
-description = "First post on personal blog"
-+++
+---
+author: "Daniel Ancuta"
+title: "First post"
+date: "2023-01-01"
+description: "First post on personal blog"
+---
 
 Every, well respected, tech blog has to have "First post". Place where you can check if plugin for syntax is working as expected, peaking of which: `print("Hello World")`
 It does work, at least on my machine.
