@@ -3,7 +3,7 @@ author: "Daniel Ancuta"
 title: "Debugging GitHub Actions Remotely"
 date: "2023-05-01"
 description: "Debugging GitHub Actions remotely"
-tags: ["github", "tools", "github actions"]
+tags: ["github", "tools", "github actions", "ci/cd", "devops"]
 ---
 
 If you use GitHub to store your repositories, you may also be utilizing GitHub Actions. I've been using it for several years across multiple projects. There have been a few instances where I had to debug a failing workflow.
