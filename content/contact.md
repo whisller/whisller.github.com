@@ -7,4 +7,4 @@ author = "Daniel Ancuta"
 showAuthor = false
 +++
 
-Best way is to send me an email on [whisller@gmail.com](mailto:whisller@gmail.com).
+Best way is to send me an email on [daniel@ancuta.org](mailto:daniel@ancuta.org).
