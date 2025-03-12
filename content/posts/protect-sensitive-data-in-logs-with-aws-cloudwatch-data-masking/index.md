@@ -69,3 +69,4 @@ Many AWS users **don’t know** about CloudWatch Data Masking, but it’s a **po
 
 ### Next Steps:
 Dig in into [AWS CloudWatch Data Masking](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/mask-sensitive-log-data.html) documentation, in few simple steps you can start protecting your customer's sensitive data.
+
