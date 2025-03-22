@@ -21,14 +21,14 @@ Rather, think of it as a book that gives you **alternative perspectives** on man
 The first four chapters: **Career**, **Marketing Yourself**, **Learning**, and **Productivity**.
 
 > *Try not to become a man of success, but rather try to become a man of value.*  
-> — Albert Einstein
+> - Albert Einstein
 
-The **Finance** section? Way too focused on real estate. But hey — it seems like that’s *the* silver bullet for many.  
+The **Finance** section? Way too focused on real estate. But hey - it seems like that’s *the* silver bullet for many.  
 Just buy a few blocks of houses and your passive income is sorted, right? 😉
 
 But as I said: don’t take everything as gospel. Use your brain, and evaluate each idea for yourself.
 
 ### Would I recommend it?
 
-It’s always good to read a new perspective. Parts of this book can bring real value — especially  
+It’s always good to read a new perspective. Parts of this book can bring real value - especially  
 if you’re at the beginning of your career.
