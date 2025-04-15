@@ -3,7 +3,7 @@ author = "Daniel Ancuta"
 title = "Serving static pages on AWS with Amplify"
 date = "2025-04-15"
 description = "When you think about creating an easy page, the first thing that comes to mind is WordPress - but there's an easier way. Check out the combination of Amplify + Hugo for a cost-efficient solution."
-tags = ["aws", "amplify", "static page", "hugo", "hugo go", "cost efficient", "cost", "github static pages"]
+tags = ["aws", "amplify", "static page", "hugo", "hugo go", "cost efficiency", "cost", "github static pages"]
 +++
 
 After creating branding for your static website - layout, logo, typography, content, and so on - serving it should be easy, right?
