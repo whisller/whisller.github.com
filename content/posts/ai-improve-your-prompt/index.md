@@ -3,7 +3,7 @@ author: "Daniel Ancuta"
 title: "AI: Improve your prompt with AI"
 date: "2025-10-24"
 description: "Learn how to use AI to iteratively improve your prompts, making them more effective for recurring tasks by adding context and constraints from each conversation"
-tags: ["ai", "prompts", "prompt engineering", "productivity", "llm", "best practices"]
+tags: ["ai", "prompts", "prompt engineering", "productivity", "llm", "best practices", "claude code"]
 ---
 
 Either you have prompt that was built based on some template or you have built it from scratch, sooner or later you will need to improve it.

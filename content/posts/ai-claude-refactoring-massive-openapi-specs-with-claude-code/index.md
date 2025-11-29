@@ -3,7 +3,7 @@ author = "Daniel Ancuta"
 title = "Refactoring Massive OpenAPI Specs with Claude Code"
 date = "2025-11-17"
 description = "How I used Claude Code to transform 3000-line monolithic OpenAPI files into maintainable modular structures in just four days"
-tags = ["ai", "prompts", "prompt engineering", "productivity", "llm", "best practices", "api"]
+tags = ["ai", "prompts", "prompt engineering", "productivity", "llm", "best practices", "api", "claude code"]
 +++
 
 I was recently asked to help improve OpenAPI specs for a project where the documentation had gotten completely out of hand. Thousands of lines of OpenAPI specs scrambled in a few files.
