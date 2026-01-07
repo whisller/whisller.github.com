@@ -17,16 +17,6 @@ So I built [claude-compose-sandbox](https://github.com/whisller/claude-compose-s
 - **Zero-config Git** - automatic SSH agent forwarding and config mounting
 - **Full flexibility** - it's just Docker Compose, customize however you want
 
-```bash
-git clone https://github.com/whisller/claude-compose-sandbox.git
-cd claude-compose-sandbox
-docker compose up -d
-docker compose exec workspace bash
-claude-code
-```
-
-That's it. Secure, persistent, and flexible.
-
 Check it out: [github.com/whisller/claude-compose-sandbox](https://github.com/whisller/claude-compose-sandbox)
 
 ---
