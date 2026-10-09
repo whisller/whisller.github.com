@@ -1,7 +1,7 @@
 +++
 author = "Daniel Ancuta"
 title = "Give Your AI Agent Tools, Not Just Instructions"
-date = "2026-10-08"
+date = "2026-10-09"
 description = "Branch names, commit footers, PR titles: stop asking the model to follow conventions and move the routine steps into tools it calls through an internal MCP server."
 tags = ["ai", "agents", "mcp", "automation", "developer-experience", "git"]
 +++
